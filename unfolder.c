@@ -1,5 +1,7 @@
 /*
-example
+To compile use:
+    gcc -Wall unfolder.c -o unfolder
+To use, for example:
 ./unfolder fibers_thin.trk -braingl -rotate 90 0 -90 -length2width -minMaxLength -cylindre -minMaxLength -filterLength 10 300 -minMaxLength -saveMesh cyl.txt
 */
 
