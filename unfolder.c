@@ -3,6 +3,7 @@ To compile use:
     gcc -Wall unfolder.c -o unfolder
 To use, for example:
 ./unfolder fibers_thin.trk -braingl -rotate 90 0 -90 -length2width -minMaxLength -cylindre -minMaxLength -filterLength 10 300 -minMaxLength -saveMesh cyl.txt
+x=-45;y=0;z=0;./unfolder fibers_thin.trk -braingl -length2width -minMaxLength -rotate $x $y $z -sphere -filterLength 50 100 -saveMesh sph-$x-$y-$z.txt
 */
 
 #include <stdlib.h>
@@ -37,6 +38,8 @@ typedef struct
 	int				version;
 	int				hdr_size;
 }TrackHeader;
+
+#define kPI 3.14159265358979323846264338327950
 
 typedef struct
 {
@@ -102,6 +105,7 @@ void minMaxLength(void)		// Compute length
 	
 	min=max=lengthOfFibre(0);
 	for(j=1;j<hdr.n_count;j++)
+	if(m[j])	// only measure fibres that have vertices (filtered out fibres have none)
 	{
 		if(lengthOfFibre(j)<min)
 			min=lengthOfFibre(j);
@@ -323,7 +327,7 @@ void cylindre(void)
 	}
 	origin=sca3D(origin,1/(float)n);
 	
-	// compute radius and height
+	// compute maximum radius and height
 	for(j=0;j<hdr.n_count;j++)
 	if(m[j])
 	{
@@ -350,6 +354,60 @@ void cylindre(void)
 			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
 			
 			p[i]=(float3D){a*R,r,p[i].z};
+		}
+	}	
+}
+void sphere(void)
+{
+	int		i,j,n=0;
+	float3D	*p,origin={0,0,0};
+	float	r,a,d,R=0,f;
+	
+	// compute barycentre
+	for(j=0;j<hdr.n_count;j++)
+	if(m[j])
+	{
+		p=(float3D*)parr[j];
+		for(i=0;i<m[j];i++)
+		{
+			origin=add3D(origin,p[i]);
+			n++;
+		}
+	}
+	origin=sca3D(origin,1/(float)n);
+	
+	// compute maximum radius
+	for(j=0;j<hdr.n_count;j++)
+	if(m[j])
+	{
+		p=(float3D*)parr[j];
+		for(i=0;i<m[j];i++)
+		{
+			r=sqrt(pow(p[i].x-origin.x,2)+pow(p[i].y-origin.y,2)+pow(p[i].z-origin.z,2));
+			if(r>R)
+				R=r;
+		}
+	}
+	
+	// apply spherical transformation
+	for(j=0;j<hdr.n_count;j++)
+	if(m[j])
+	{
+		p=(float3D*)parr[j];
+		for(i=0;i<m[j];i++)
+		{
+			r=sqrt(pow(p[i].x-origin.x,2)+pow(p[i].y-origin.y,2)+pow(p[i].z-origin.z,2));
+			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
+			d=atan2(sqrt(pow(p[i].x-origin.x,2)+pow(p[i].y-origin.y,2)),p[i].z-origin.z);
+			d=fabs(d);
+			f=R*d/kPI;
+			//f=R*(d+kPI)/2.0;// this is pi*R*(d+pi)/(2*pi).
+							// pi*R is the length of a radius in the flat representation
+							// d goes from -pi at the centre of the disc to pi at the border
+							// then (d+pi)/(2*pi) goes from 0 to 1
+							// and then pi*R*(d+pi)/(2*pi) is the circle in the disc
+							// corresponding to the present 3d point
+			p[i]=(float3D){f*cos(a),f*sin(a),r};
 		}
 	}	
 }
@@ -408,6 +466,9 @@ int main(int argc, char *argv[])
 		printf("    -minMaxLength                        Compute min and max fibre lengths\n");
 		printf("    -cylindre                            Unfold objects using a\n");
 		printf("                                         cylindrical transformation\n");
+		printf("    -sphere                              Unfold objects using a\n");
+		printf("                                         spherical transformation\n");
+		printf("                                         (universal polar stereographic)\n");
 		printf("    -filterLength min_length max_length  Remove all fibres shorter than\n");
 		printf("                                         min_length and longer than\n");
 		printf("                                         max_length\n");
@@ -496,6 +557,9 @@ int main(int argc, char *argv[])
 		if(strcmp(argv[i],"-cylindre")==0)
 			cylindre();
 		else
+		if(strcmp(argv[i],"-sphere")==0)
+			sphere();
+		else
 		if(strcmp(argv[i],"-hist")==0)
 			lengthHistogram();
 		else
@@ -528,6 +592,8 @@ int main(int argc, char *argv[])
 		else
 		if(strcmp(argv[i],"-saveMesh")==0)
 			saveMesh(argv[++i]);
+		else
+			printf("ERROR: command [%s] not found\n",argv[i]);
 	}
 	
 	return 0;
