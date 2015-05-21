@@ -454,7 +454,7 @@ transformation.
 	H=H*2;
 	
 	// apply cylindrical transformation
-	var d,x1,y1,b;
+	float d,x1,y1,b;
 	for(j=0;j<hdr.n_count;j++)
 	if(m[j])
 	{
@@ -466,10 +466,10 @@ transformation.
 			
 			/* this is the part that does the partial transformation */
 			if(theta>0.00001)
-				d=(pi*r)*sin(theta)/theta;
+				d=(kPI*r)*sin(theta)/theta;
 			else
-				d=pi*r;
-			b=theta*a/pi;
+				d=kPI*r;
+			b=theta*a/kPI;
 			x1=r-d*cos(b);
 			y1=d*sin(b);
 			p[i]=(float3D){x1,y1,p[i].z};
