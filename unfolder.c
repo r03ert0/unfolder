@@ -536,6 +536,8 @@ int main(int argc, char *argv[])
 		printf("    -sphere                              Unfold objects using a\n");
 		printf("                                         spherical transformation\n");
 		printf("                                         (universal polar stereographic)\n");
+		printf("    -partialCylindre theta               Unfold objects using a partial\n");
+		printf("                                         cylindrical transformation\n");
 		printf("    -filterLength min_length max_length  Remove all fibres shorter than\n");
 		printf("                                         min_length and longer than\n");
 		printf("                                         max_length\n");
@@ -623,6 +625,13 @@ int main(int argc, char *argv[])
 		else
 		if(strcmp(argv[i],"-cylindre")==0)
 			cylindre();
+		else
+		if(strcmp(argv[i],"-partialCylindre")==0)
+		{
+			float theta;
+			theta=atof(argv[++i]);
+			partialCylindre(theta);
+		}
 		else
 		if(strcmp(argv[i],"-sphere")==0)
 			sphere();
