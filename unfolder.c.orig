@@ -411,6 +411,8 @@ void sphere(void)
 		}
 	}	
 }
+<<<<<<< HEAD
+=======
 void partialCylindre(float theta)
 {
 /* 
@@ -478,6 +480,7 @@ transformation.
 	}	
 }
 
+>>>>>>> baa9da706e0d466ab2981278b88f01ccad720282
 int swapint(int i)
 {
 	unsigned char	*b2;
@@ -536,8 +539,11 @@ int main(int argc, char *argv[])
 		printf("    -sphere                              Unfold objects using a\n");
 		printf("                                         spherical transformation\n");
 		printf("                                         (universal polar stereographic)\n");
+<<<<<<< HEAD
+=======
 		printf("    -partialCylindre theta               Unfold objects using a partial\n");
 		printf("                                         cylindrical transformation\n");
+>>>>>>> baa9da706e0d466ab2981278b88f01ccad720282
 		printf("    -filterLength min_length max_length  Remove all fibres shorter than\n");
 		printf("                                         min_length and longer than\n");
 		printf("                                         max_length\n");
@@ -626,6 +632,8 @@ int main(int argc, char *argv[])
 		if(strcmp(argv[i],"-cylindre")==0)
 			cylindre();
 		else
+<<<<<<< HEAD
+=======
 		if(strcmp(argv[i],"-partialCylindre")==0)
 		{
 			float theta;
@@ -633,6 +641,7 @@ int main(int argc, char *argv[])
 			partialCylindre(theta);
 		}
 		else
+>>>>>>> baa9da706e0d466ab2981278b88f01ccad720282
 		if(strcmp(argv[i],"-sphere")==0)
 			sphere();
 		else
