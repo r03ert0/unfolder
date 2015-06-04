@@ -2,8 +2,11 @@
 To compile use:
     gcc -Wall unfolder.c -o unfolder
 To use, for example:
+
 ./unfolder fibers_thin.trk -braingl -rotate 90 0 -90 -length2width -minMaxLength -cylindre -minMaxLength -filterLength 10 300 -minMaxLength -saveMesh cyl.txt
-x=-45;y=0;z=0;./unfolder fibers_thin.trk -braingl -length2width -minMaxLength -rotate $x $y $z -sphere -filterLength 50 100 -saveMesh sph-$x-$y-$z.txt
+
+x=-45;y=0;z=0;
+./unfolder fibers_thin.trk -braingl -length2width -minMaxLength -rotate $x $y $z -sphere -filterLength 50 100 -saveMesh sph-$x-$y-$z.txt
 */
 
 #include <stdlib.h>
@@ -354,6 +357,7 @@ void cylindre(void)
 			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
 			
 			p[i]=(float3D){a*R,r,p[i].z};
+			p[i]=(float3D){r,kPI*r*a,p[i].z};
 		}
 	}	
 }
@@ -411,13 +415,13 @@ void sphere(void)
 		}
 	}	
 }
-void partialCylindre(float theta)
+void partialCylindre(float alpha)
 {
 /* 
 partial cylindrical transformation.
-The parametre t varies from 0 to pi/2.
-A value t=0 produces no transformation, and a
-value of t=pi/2 produces the complete cylindrical
+The parametre alpha varies from 0 to pi/2.
+A value alpha=pi/2 produces no transformation, and a
+value of alpha=0 produces the complete cylindrical
 transformation.
  */
 	int		i,j,n=0;
@@ -454,7 +458,10 @@ transformation.
 	H=H*2;
 	
 	// apply cylindrical transformation
-	float d,x1,y1,b;
+	float	r1;
+	float	d1;
+	float	a1;
+	float   x1,y1;
 	for(j=0;j<hdr.n_count;j++)
 	if(m[j])
 	{
@@ -465,15 +472,17 @@ transformation.
 			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
 			
 			/* this is the part that does the partial transformation */
-			if(theta>0.00001)
-				d=(kPI*r)*sin(theta)/theta;
+			r1=r*(a/kPI);
+			a1=(a/kPI)*alpha;
+			if(fabs(a1)>0.00001)
+				d1=kPI*r1*sin(a1)/a1;
 			else
-				d=kPI*r;
-			b=theta*a/kPI;
-			x1=r-d*cos(b);
-			y1=d*sin(b);
-			p[i]=(float3D){x1,y1,p[i].z};
+				d1=kPI*r1;
+			x1=r-d1*sin(a1);
+			y1=d1*cos(a1);
 			/* ----------------------------------------------------- */
+
+			p[i]=(float3D){x1,y1,p[i].z};
 		}
 	}	
 }
