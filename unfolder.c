@@ -146,7 +146,7 @@ void lengthHistogram(void)		// Compute length histogram
 }
 float3D normal(float3D *p, int np, int i)
 {
-	float3D	n;
+	float3D	n={0,0,0};
 	
 	if(i<1)
 		n=normal(p,np,i+1);
@@ -471,7 +471,31 @@ transformation.
 			r=sqrt(pow(p[i].x-origin.x,2)+pow(p[i].y-origin.y,2));
 			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
 			
-			/* this is the part that does the partial transformation */
+			/* This is the part that does the partial transformation */
+			/* ----------------------------------------------------- */
+			/*
+				To unfold partially a 3d point, first compute the
+				radius and angle of the circle that contains it (r and
+				a, as for the complete unfolding). To move
+				progressively the point from the native, folded
+				configuration to the completely unfolded, increase the
+				radius of its sphere, while keeping the point (r,0) at
+				the same position. The length from (r,0) to the point
+				to unfold has to be kept the same, despite the
+				progressive changes in radius. When the radius
+				approaches infinity, the point is completely unfolded.
+				The easiest point to unfold is the point at (-r,0).
+				Indeed, any other point over a circle of radius r can
+				be seen as a partial unfolding of the point (-r,0) of
+				a circle of smaller radius r'. Then, we can find the
+				formula for the point (r,0) plus the way of changing
+				from r to r' to solve the general case. If the original
+				unfolding parametre is alpha, the equivalent alpha' for
+				the virtual circle of smaller radius is
+				alpha'=alpha*(a/pi).
+				The radius of the virtual circle is
+				r'=r*(a/pi).
+			*/
 			r1=r*(a/kPI);
 			a1=(a/kPI)*alpha;
 			if(fabs(a1)>0.00001)
@@ -527,6 +551,7 @@ int main(int argc, char *argv[])
 		printf("    -braingl                             Account for endianness\n");
 		printf("                                         idiosyncrasies in brainGL's\n");
 		printf("                                         fib to trk converter\n");
+		printf("    -centre                              move object to bounding box centre\n");
 		printf("    -rotate x y z                        Rotate the object by x, y and\n");
 		printf("                                         then z degrees before unfolding\n");
 		printf("    -length2width                        Map fibre length to fibre ribbon\n");
@@ -602,7 +627,8 @@ int main(int argc, char *argv[])
 	}
 	fclose(f);
 	free(pr);
-
+	
+	// process command line switches
 	for(i=2+braingl;i<argc;i++)
 	{
 		printf("%s\n",argv[i]);
@@ -614,6 +640,27 @@ int main(int argc, char *argv[])
 		{
 			SZ=atof(argv[++i]);
 			printf("width: %f\n",SZ);
+		}
+		else
+		if(strcmp(argv[i],"-centre")==0)
+		{
+			// move object to boundingbox centre
+			float3D		min,max,o;
+			min=max=p[0];
+			for(j=0;j<hdr.n_count;j++)
+			for(i=0;i<m[j];i++)
+			{
+				if(p[j*m[j]+i].x<min.x) min.x=p[j*m[j]+i].x;
+				if(p[j*m[j]+i].y<min.y) min.y=p[j*m[j]+i].y;
+				if(p[j*m[j]+i].z<min.z) min.z=p[j*m[j]+i].z;
+				if(p[j*m[j]+i].x>max.x) max.x=p[j*m[j]+i].x;
+				if(p[j*m[j]+i].y>max.y) max.y=p[j*m[j]+i].y;
+				if(p[j*m[j]+i].z>max.z) max.z=p[j*m[j]+i].z;
+			}
+			o=(float3D){(min.x+max.x)/2.0,(min.y+max.y)/2.0,(min.z+max.z)/2.0};
+			for(j=0;j<hdr.n_count;j++)
+			for(i=0;i<m[j];i++)
+				p[j*m[j]+i]=sub3D(p[j*m[j]+i],o);
 		}
 		else
 		if(strcmp(argv[i],"-minMaxLength")==0)
