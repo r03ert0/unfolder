@@ -246,7 +246,7 @@ void mapLengthToSize(void)
 	float	sz0,szmin,szmax;
 
 	szmin=0.1;
-	szmax=6;
+	szmax=0.1;
 	min=max=lengthOfFibre(0);
 	for(j=1;j<hdr.n_count;j++)
 	{
