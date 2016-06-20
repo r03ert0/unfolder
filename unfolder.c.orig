@@ -2,11 +2,8 @@
 To compile use:
     gcc -Wall unfolder.c -o unfolder
 To use, for example:
-
 ./unfolder fibers_thin.trk -braingl -rotate 90 0 -90 -length2width -minMaxLength -cylindre -minMaxLength -filterLength 10 300 -minMaxLength -saveMesh cyl.txt
-
-x=-45;y=0;z=0;
-./unfolder fibers_thin.trk -braingl -length2width -minMaxLength -rotate $x $y $z -sphere -filterLength 50 100 -saveMesh sph-$x-$y-$z.txt
+x=-45;y=0;z=0;./unfolder fibers_thin.trk -braingl -length2width -minMaxLength -rotate $x $y $z -sphere -filterLength 50 100 -saveMesh sph-$x-$y-$z.txt
 */
 
 #include <stdlib.h>
@@ -146,7 +143,7 @@ void lengthHistogram(void)		// Compute length histogram
 }
 float3D normal(float3D *p, int np, int i)
 {
-	float3D	n={0,0,0};
+	float3D	n;
 	
 	if(i<1)
 		n=normal(p,np,i+1);
@@ -246,7 +243,7 @@ void mapLengthToSize(void)
 	float	sz0,szmin,szmax;
 
 	szmin=0.1;
-	szmax=0.1;
+	szmax=6;
 	min=max=lengthOfFibre(0);
 	for(j=1;j<hdr.n_count;j++)
 	{
@@ -357,11 +354,9 @@ void cylindre(void)
 			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
 			
 			p[i]=(float3D){a*R,r,p[i].z};
-			p[i]=(float3D){r,kPI*r*a,p[i].z};
 		}
 	}	
 }
-
 void sphere(void)
 {
 	int		i,j,n=0;
@@ -393,6 +388,7 @@ void sphere(void)
 				R=r;
 		}
 	}
+	
 	// apply spherical transformation
 	for(j=0;j<hdr.n_count;j++)
 	if(m[j])
@@ -415,7 +411,8 @@ void sphere(void)
 		}
 	}	
 }
-
+<<<<<<< HEAD
+=======
 void partialCylindre(float theta)
 {
 /* 
@@ -483,6 +480,7 @@ transformation.
 	}	
 }
 
+>>>>>>> baa9da706e0d466ab2981278b88f01ccad720282
 int swapint(int i)
 {
 	unsigned char	*b2;
@@ -541,8 +539,11 @@ int main(int argc, char *argv[])
 		printf("    -sphere                              Unfold objects using a\n");
 		printf("                                         spherical transformation\n");
 		printf("                                         (universal polar stereographic)\n");
+<<<<<<< HEAD
+=======
 		printf("    -partialCylindre theta               Unfold objects using a partial\n");
 		printf("                                         cylindrical transformation\n");
+>>>>>>> baa9da706e0d466ab2981278b88f01ccad720282
 		printf("    -filterLength min_length max_length  Remove all fibres shorter than\n");
 		printf("                                         min_length and longer than\n");
 		printf("                                         max_length\n");
@@ -598,6 +599,7 @@ int main(int argc, char *argv[])
 	}
 	fclose(f);
 	free(pr);
+
 	for(i=2+braingl;i<argc;i++)
 	{
 		printf("%s\n",argv[i]);
@@ -630,6 +632,8 @@ int main(int argc, char *argv[])
 		if(strcmp(argv[i],"-cylindre")==0)
 			cylindre();
 		else
+<<<<<<< HEAD
+=======
 		if(strcmp(argv[i],"-partialCylindre")==0)
 		{
 			float theta;
@@ -637,6 +641,7 @@ int main(int argc, char *argv[])
 			partialCylindre(theta);
 		}
 		else
+>>>>>>> baa9da706e0d466ab2981278b88f01ccad720282
 		if(strcmp(argv[i],"-sphere")==0)
 			sphere();
 		else
