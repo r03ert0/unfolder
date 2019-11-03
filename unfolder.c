@@ -361,6 +361,10 @@ void cylindre(void)
 		}
 	}	
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> r03ert0/master
 void sphere(void)
 {
 	int		i,j,n=0;
@@ -392,7 +396,10 @@ void sphere(void)
 				R=r;
 		}
 	}
+<<<<<<< HEAD
+=======
 	
+>>>>>>> r03ert0/master
 	// apply spherical transformation
 	for(j=0;j<hdr.n_count;j++)
 	if(m[j])
@@ -415,6 +422,16 @@ void sphere(void)
 		}
 	}	
 }
+<<<<<<< HEAD
+
+void partialCylindre(float theta)
+{
+/* 
+partial cylindrical transformation.
+The parametre t varies from 0 to pi/2.
+A value t=0 produces no transformation, and a
+value of t=pi/2 produces the complete cylindrical
+=======
 void partialCylindre(float alpha)
 {
 /* 
@@ -422,6 +439,7 @@ partial cylindrical transformation.
 The parametre alpha varies from 0 to pi/2.
 A value alpha=pi/2 produces no transformation, and a
 value of alpha=0 produces the complete cylindrical
+>>>>>>> r03ert0/master
 transformation.
  */
 	int		i,j,n=0;
@@ -458,10 +476,14 @@ transformation.
 	H=H*2;
 	
 	// apply cylindrical transformation
+<<<<<<< HEAD
+	float d,x1,y1,b;
+=======
 	float	r1;
 	float	d1;
 	float	a1;
 	float   x1,y1;
+>>>>>>> r03ert0/master
 	for(j=0;j<hdr.n_count;j++)
 	if(m[j])
 	{
@@ -471,6 +493,18 @@ transformation.
 			r=sqrt(pow(p[i].x-origin.x,2)+pow(p[i].y-origin.y,2));
 			a=atan2(p[i].y-origin.y,p[i].x-origin.x);
 			
+<<<<<<< HEAD
+			/* this is the part that does the partial transformation */
+			if(theta>0.00001)
+				d=(kPI*r)*sin(theta)/theta;
+			else
+				d=kPI*r;
+			b=theta*a/kPI;
+			x1=r-d*cos(b);
+			y1=d*sin(b);
+			p[i]=(float3D){x1,y1,p[i].z};
+			/* ----------------------------------------------------- */
+=======
 			/* This is the part that does the partial transformation */
 			/* ----------------------------------------------------- */
 			/*
@@ -507,6 +541,7 @@ transformation.
 			/* ----------------------------------------------------- */
 
 			p[i]=(float3D){x1,y1,p[i].z};
+>>>>>>> r03ert0/master
 		}
 	}	
 }
@@ -627,8 +662,11 @@ int main(int argc, char *argv[])
 	}
 	fclose(f);
 	free(pr);
+<<<<<<< HEAD
+=======
 	
 	// process command line switches
+>>>>>>> r03ert0/master
 	for(i=2+braingl;i<argc;i++)
 	{
 		printf("%s\n",argv[i]);
